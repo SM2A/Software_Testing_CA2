@@ -3,6 +3,8 @@ package ir.proprog.enrollassist.controller.student;
 import com.google.common.collect.Iterators;
 import ir.proprog.enrollassist.Exception.ExceptionList;
 import ir.proprog.enrollassist.domain.GraduateLevel;
+import ir.proprog.enrollassist.domain.course.Course;
+import ir.proprog.enrollassist.domain.section.Section;
 import ir.proprog.enrollassist.domain.student.Student;
 import ir.proprog.enrollassist.domain.student.StudentNumber;
 import ir.proprog.enrollassist.domain.user.User;
@@ -14,6 +16,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Arrays;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
@@ -127,4 +130,34 @@ public class StudentControllerTest {
         assertEquals(stdNum, studentController.addStudent(studentView).getStudentNo().getNumber());
     }
 
+    @Test
+    public void findTakeableSectionsByMajor_no_student_found() {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> studentController.findTakeableSectionsByMajor("1"));
+        assertTrue(Objects.requireNonNull(exception.getMessage()).contains("Student not found."));
+    }
+
+    @Test
+    public void findTakeableSectionsByMajor_no_course() {
+        String stdNum = "1";
+        when(studentRepository.findByStudentNumber(new StudentNumber(stdNum))).thenReturn(Optional.of(mock(Student.class)));
+        assertEquals(0, Iterators.size(studentController.findTakeableSectionsByMajor(stdNum).iterator()));
+    }
+
+    @Test
+    public void findTakeableSectionsByMajor_some_course() throws ExceptionList {
+        String stdNum = "1";
+        Student student = mock(Student.class);
+        when(student.getStudentNumber()).thenReturn(new StudentNumber(stdNum));
+        when(studentRepository.findByStudentNumber(new StudentNumber(stdNum))).thenReturn(Optional.of(student));
+
+        Section section1 = new Section(new Course("0000001", "a", 3, "Masters"), "1");
+        Section section2 = new Section(new Course("0000002", "b", 3, "Masters"), "2");
+        Section section3 = new Section(new Course("0000003", "c", 3, "Masters"), "3");
+
+        when(sectionRepository.findAll()).thenReturn(() -> Stream.of(section1, section2, section3).iterator());
+        when(student.getTakeableSections(sectionRepository.findAll())).thenReturn(Arrays.asList(section1, section2));
+
+        assertEquals(2, Iterators.size(studentController.findTakeableSectionsByMajor(stdNum).iterator()));
+    }
 }
