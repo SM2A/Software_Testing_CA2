@@ -1,8 +1,11 @@
 package ir.proprog.enrollassist.controller.student;
 
 import com.google.common.collect.Iterators;
+import ir.proprog.enrollassist.Exception.ExceptionList;
+import ir.proprog.enrollassist.domain.GraduateLevel;
 import ir.proprog.enrollassist.domain.student.Student;
 import ir.proprog.enrollassist.domain.student.StudentNumber;
+import ir.proprog.enrollassist.domain.user.User;
 import ir.proprog.enrollassist.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,11 +14,13 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class StudentControllerTest {
 
@@ -81,29 +86,45 @@ public class StudentControllerTest {
     }
 
     @Test
-    public void get_one_student_not_found(){
+    public void get_one_student_not_found() {
         assertThrows(ResponseStatusException.class, () -> studentController.one(StudentNumber.DEFAULT.getNumber()));
     }
 
     @Test
-    public void get_one_student_student_found(){
-        when(studentRepository.findByStudentNumber(new StudentNumber("1"))).thenReturn(Optional.of(new Student("1")));
-        assertEquals("1", studentController.one("1").getStudentNo().getNumber());
+    public void get_one_student_student_found() {
+        String stdNum = "1";
+        when(studentRepository.findByStudentNumber(new StudentNumber(stdNum))).thenReturn(Optional.of(new Student(stdNum)));
+        assertEquals(stdNum, studentController.one(stdNum).getStudentNo().getNumber());
     }
 
-    /*@Test
-    public void get_one_student_many_student_found(){
-        assertThrows(ResponseStatusException.class, () -> studentController.one(StudentNumber.DEFAULT.getNumber()));
-    }*/
+    @Test
+    public void addStudent_no_user_found() {
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> studentController.addStudent(new StudentView(new Student("1"))));
+        assertTrue(Objects.requireNonNull(exception.getMessage()).contains("was not found."));
+    }
 
+    @Test
+    public void addStudent_student_exist() {
+        String stdNum = "1";
+        StudentView studentView = new StudentView(new Student(stdNum));
+        studentView.setUserId(stdNum);
+        when(userRepository.findByUserId(stdNum)).thenReturn(Optional.of(mock(User.class)));
+        when(studentRepository.findByStudentNumber(new StudentNumber(stdNum))).thenReturn(Optional.of(mock(Student.class)));
 
-/*    @Test
-    public void addStudent_no_duplicate(){
-        StudentView ss = studentController.addStudent(studentView1);
+        ResponseStatusException exception = assertThrows(ResponseStatusException.class,
+                () -> studentController.addStudent(studentView));
+        assertTrue(Objects.requireNonNull(exception.getMessage()).contains("This student already exists."));
+    }
 
-        System.out.println(ss);
-        System.out.println(studentView1);
-//        assertEquals(studentView1, ss);
-    }*/
+    @Test
+    public void addStudent_student_not_exist() throws ExceptionList {
+        String stdNum = "1";
+        StudentView studentView = new StudentView(new Student(stdNum, GraduateLevel.PHD.name()));
+        studentView.setUserId(stdNum);
+
+        when(userRepository.findByUserId(stdNum)).thenReturn(Optional.of(mock(User.class)));
+        assertEquals(stdNum, studentController.addStudent(studentView).getStudentNo().getNumber());
+    }
 
 }
