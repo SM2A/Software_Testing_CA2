@@ -2,13 +2,16 @@ package ir.proprog.enrollassist.controller.student;
 
 import com.google.common.collect.Iterators;
 import ir.proprog.enrollassist.domain.student.Student;
+import ir.proprog.enrollassist.domain.student.StudentNumber;
 import ir.proprog.enrollassist.repository.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Spy;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -34,15 +37,6 @@ public class StudentControllerTest {
     @Mock
     UserRepository userRepository;
 
-
-    Student student1;
-    Student student2;
-    Student student3;
-
-    StudentView studentView1;
-    StudentView studentView2;
-    StudentView studentView3;
-
     @BeforeEach
     public void initialize() {
         studentRepository = mock(StudentRepository.class);
@@ -58,14 +52,6 @@ public class StudentControllerTest {
                 enrollmentListRepository,
                 userRepository
         );
-
-        student1 = mock(Student.class);
-        student2 = mock(Student.class);
-        student3 = mock(Student.class);
-
-        studentView1 = mock(StudentView.class);
-        studentView2 = mock(StudentView.class);
-        studentView3 = mock(StudentView.class);
     }
 
     @AfterEach
@@ -77,28 +63,38 @@ public class StudentControllerTest {
         sectionRepository = null;
         enrollmentListRepository = null;
         userRepository = null;
-
-        student1 = null;
-        student2 = null;
-        student3 = null;
-
-        studentView1 = null;
-        studentView2 = null;
-        studentView3 = null;
     }
 
     @Test
     public void getAll_empty() {
-        Stream<Student> stream = Stream.empty();
-        when(studentRepository.findAll()).thenReturn(stream::iterator);
         assertEquals(0, Iterators.size(studentController.all().iterator()));
     }
 
     @Test
     public void getAll_not_empty() {
+        Student student1 = mock(Student.class);
+        Student student2 = mock(Student.class);
+        Student student3 = mock(Student.class);
+
         when(studentRepository.findAll()).thenReturn(() -> Stream.of(student1, student2, student3).iterator());
         assertEquals(3, Iterators.size(studentController.all().iterator()));
     }
+
+    @Test
+    public void get_one_student_not_found(){
+        assertThrows(ResponseStatusException.class, () -> studentController.one(StudentNumber.DEFAULT.getNumber()));
+    }
+
+    @Test
+    public void get_one_student_student_found(){
+        when(studentRepository.findByStudentNumber(new StudentNumber("1"))).thenReturn(Optional.of(new Student("1")));
+        assertEquals("1", studentController.one("1").getStudentNo().getNumber());
+    }
+
+    /*@Test
+    public void get_one_student_many_student_found(){
+        assertThrows(ResponseStatusException.class, () -> studentController.one(StudentNumber.DEFAULT.getNumber()));
+    }*/
 
 
 /*    @Test
