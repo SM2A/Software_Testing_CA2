@@ -65,7 +65,6 @@ public class StudentControllerTest {
     @AfterEach
     public void cleanUp() {
         studentController = null;
-
         studentRepository = null;
         courseRepository = null;
         sectionRepository = null;
@@ -73,11 +72,25 @@ public class StudentControllerTest {
         userRepository = null;
     }
 
+    /*
+    * studentController : Mock
+    * Sate Verification
+    * Classical
+    * */
     @Test
     public void getAll_empty() {
         assertEquals(0, Iterators.size(studentController.all().iterator()));
     }
 
+    /*
+     * studentController : Mock
+     * studentRepository : Stub
+     * student1 : Dummy Object
+     * student2 : Dummy Object
+     * student3 : Dummy Object
+     * Sate Verification
+     * Classical
+     * */
     @Test
     public void getAll_not_empty() {
         Student student1 = mock(Student.class);
@@ -88,11 +101,22 @@ public class StudentControllerTest {
         assertEquals(3, Iterators.size(studentController.all().iterator()));
     }
 
+    /*
+     * studentController : Mock
+     * Sate Verification
+     * Classical
+     * */
     @Test
     public void get_one_student_not_found() {
         assertThrows(ResponseStatusException.class, () -> studentController.one(StudentNumber.DEFAULT.getNumber()));
     }
 
+    /*
+     * studentController : Mock
+     * studentRepository : Stub
+     * Sate Verification
+     * Classical
+     * */
     @Test
     public void get_one_student_student_found() {
         String stdNum = "1";
@@ -100,6 +124,11 @@ public class StudentControllerTest {
         assertEquals(stdNum, studentController.one(stdNum).getStudentNo().getNumber());
     }
 
+    /*
+     * studentController : Mock
+     * Sate Verification
+     * Classical
+     * */
     @Test
     public void addStudent_no_user_found() {
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
@@ -107,6 +136,14 @@ public class StudentControllerTest {
         assertTrue(Objects.requireNonNull(exception.getMessage()).contains("was not found."));
     }
 
+    /*
+     * studentController : Mock
+     * studentRepository : Stub
+     * userRepository : Stub
+     * studentView : Fake Object
+     * Sate Verification
+     * Classical
+     * */
     @Test
     public void addStudent_student_exist() {
         String stdNum = "1";
@@ -120,6 +157,13 @@ public class StudentControllerTest {
         assertTrue(Objects.requireNonNull(exception.getMessage()).contains("This student already exists."));
     }
 
+    /*
+     * studentController : Mock
+     * userRepository : Stub
+     * studentView : Fake Object
+     * Sate Verification
+     * Classical
+     * */
     @Test
     public void addStudent_student_not_exist() throws ExceptionList {
         String stdNum = "1";
@@ -130,6 +174,11 @@ public class StudentControllerTest {
         assertEquals(stdNum, studentController.addStudent(studentView).getStudentNo().getNumber());
     }
 
+    /*
+     * studentController : Mock
+     * Sate Verification
+     * Classical
+     * */
     @Test
     public void findTakeableSectionsByMajor_no_student_found() {
         ResponseStatusException exception = assertThrows(ResponseStatusException.class,
@@ -137,6 +186,12 @@ public class StudentControllerTest {
         assertTrue(Objects.requireNonNull(exception.getMessage()).contains("Student not found."));
     }
 
+    /*
+     * studentController : Mock
+     * studentRepository : Stub
+     * Sate Verification
+     * Classical
+     * */
     @Test
     public void findTakeableSectionsByMajor_no_course() {
         String stdNum = "1";
@@ -144,6 +199,17 @@ public class StudentControllerTest {
         assertEquals(0, Iterators.size(studentController.findTakeableSectionsByMajor(stdNum).iterator()));
     }
 
+    /*
+     * studentController : Mock
+     * studentRepository : Stub
+     * sectionRepository : Stub
+     * student : Stub
+     * section1 : Fake Object
+     * section2 : Fake Object
+     * section3 : Fake Object
+     * Sate Verification
+     * Classical
+     * */
     @Test
     public void findTakeableSectionsByMajor_some_course() throws ExceptionList {
         String stdNum = "1";
