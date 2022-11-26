@@ -47,6 +47,9 @@ public class AddCourseServiceTest {
 
         getCheckLoopMethod().invoke(addCourseService, course1, exceptionList);
 
+        verify(course1, times(1)).getPrerequisites();
+        verify(course2, times(1)).getPrerequisites();
+
         Assertions.assertEquals(1, exceptionList.getExceptions().size());
     }
 
