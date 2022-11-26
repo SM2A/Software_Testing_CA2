@@ -27,7 +27,7 @@ import static org.mockito.Mockito.when;
 
 public class StudentControllerTest {
 
-    @Spy
+    @Mock
     StudentController studentController;
 
     @Mock
@@ -73,7 +73,6 @@ public class StudentControllerTest {
     }
 
     /*
-    * studentController : Mock
     * Sate Verification
     * Classical
     * */
@@ -83,7 +82,6 @@ public class StudentControllerTest {
     }
 
     /*
-     * studentController : Mock
      * studentRepository : Stub
      * student1 : Dummy Object
      * student2 : Dummy Object
@@ -102,7 +100,6 @@ public class StudentControllerTest {
     }
 
     /*
-     * studentController : Mock
      * Sate Verification
      * Classical
      * */
@@ -112,7 +109,6 @@ public class StudentControllerTest {
     }
 
     /*
-     * studentController : Mock
      * studentRepository : Stub
      * Sate Verification
      * Classical
@@ -125,7 +121,6 @@ public class StudentControllerTest {
     }
 
     /*
-     * studentController : Mock
      * Sate Verification
      * Classical
      * */
@@ -137,7 +132,6 @@ public class StudentControllerTest {
     }
 
     /*
-     * studentController : Mock
      * studentRepository : Stub
      * userRepository : Stub
      * studentView : Fake Object
@@ -158,7 +152,6 @@ public class StudentControllerTest {
     }
 
     /*
-     * studentController : Mock
      * userRepository : Stub
      * studentView : Fake Object
      * Sate Verification
@@ -175,7 +168,6 @@ public class StudentControllerTest {
     }
 
     /*
-     * studentController : Mock
      * Sate Verification
      * Classical
      * */
@@ -187,7 +179,6 @@ public class StudentControllerTest {
     }
 
     /*
-     * studentController : Mock
      * studentRepository : Stub
      * Sate Verification
      * Classical
@@ -200,7 +191,6 @@ public class StudentControllerTest {
     }
 
     /*
-     * studentController : Mock
      * studentRepository : Stub
      * sectionRepository : Stub
      * student : Stub
